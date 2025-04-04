@@ -1,0 +1,50 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+let errorMessage = null;
+
+if (Astro.request.method === "POST") {
+	const data = await Astro.request.formData();
+	const username = data.get("username");
+	const password = data.get("password");
+
+	const response = await fetch('https://dummyjson.com/auth/login', {
+		method: 'POST',
+		headers: {'Content-Type': 'application/json'},
+		body: JSON.stringify({username, password})
+	});
+
+	if (response.ok) {
+		const json = await response.json();
+
+		Astro.cookies.set('auth', {
+			accessToken: json.accessToken,
+			refreshToken: json.refreshToken
+		});
+
+		return Astro.redirect('/me');
+
+	} else {
+		errorMessage = "Login failed. Please try again.";
+	}
+
+
+}
+
+---
+
+<Layout>
+	<h1>Login</h1>
+	<form method="POST">
+		<div>
+			<label for="username">Username:</label>
+			<input type="text" id="username" name="username" required value="emilys"/>
+		</div>
+		<div>
+			<label for="password">Password:</label>
+			<input type="password" id="password" name="password" required value="emilyspass"/>
+		</div>
+		<button type="submit">Login</button>
+	</form>
+	{errorMessage && <p>{errorMessage}</p>}
+</Layout>

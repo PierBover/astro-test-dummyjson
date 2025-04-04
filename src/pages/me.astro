@@ -1,0 +1,28 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const cookie = Astro.cookies.get('auth');
+
+if (!cookie) {
+	return Astro.redirect('/login');
+}
+
+const auth = cookie.json();
+
+const response = await fetch('https://dummyjson.com/auth/me', {
+	method: 'GET',
+	headers: {
+		'Authorization': `Bearer ${auth.accessToken}`
+	}
+});
+
+const me = await response.json();
+
+---
+<Layout>
+<h1>Me</h1>
+<p>{me.id}</p>
+<p>{me.email}</p>
+<p>{me.phone}</p>
+<p>{me.username}</p>
+</Layout>
