@@ -1,0 +1,14 @@
+---
+import type {Product} from "../types";
+
+const response = await fetch("https://dummyjson.com/products?delay=3000");
+const json = await response.json();
+---
+
+<ul>
+	{json.products.map((product:Product) => (
+		<li>
+			<a href={`/products/${product.id}`}>{product.title}</a>
+		</li>
+	))}
+</ul>
